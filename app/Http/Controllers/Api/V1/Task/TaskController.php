@@ -53,7 +53,6 @@ class TaskController extends Controller
                 'user_id' => auth()->id(),
             ]);
 
-            $task->user_id = auth()->id();
 
             return (new TaskResource($task->load('category')))->additional([
                 'message' => 'task created successfully',
