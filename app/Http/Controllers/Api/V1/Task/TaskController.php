@@ -15,6 +15,8 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
     public function index()
     {
         //
@@ -49,7 +51,7 @@ class TaskController extends Controller
                 'description' => $request->validated()['description'],
                 'due_date' => $request->validated()['due_date'],
                 'is_completed' => $request->validated()['is_completed'],
-                'category_id' => $request->validated(['category_id']),
+                'category_id' => $request->validated()['category_id'],
                 'user_id' => auth()->id(),
             ]);
 
@@ -80,7 +82,7 @@ class TaskController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'failed to create task',
+                'message' => 'failed to retrieve task',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -102,7 +104,7 @@ class TaskController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'failed to create task',
+                'message' => 'failed to update task',
                 'error' => $e->getMessage()
             ], 500);
         }
