@@ -121,6 +121,5 @@ class TaskController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-        }
     }
 }
