@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api\V1\Task;
 
+use App\Http\Resources\Api\V1\Category\CategoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +21,9 @@ class TaskResource extends JsonResource
             'description' => $this->description,
             'due_date' => $this->due_date,
             'user' => $this->user,
-            'category' => $this->category->name
+            'category' => $this->whenLoaded('category', function () {
+                return new CategoryResource($this->category);
+            }),
         ];
     }
 }
