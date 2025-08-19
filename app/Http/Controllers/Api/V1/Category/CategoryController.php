@@ -21,7 +21,7 @@ class CategoryController extends Controller
         try {
             $this->authorize('viewAny', Category::class);
 
-            $categories = auth()->user()->categories()->get();
+            $categories = auth()->user()->categories()->with('tasks')->get();
 
             return CategoryResource::collection($categories)->additional([
                 'message' => 'Categories Retrieved successfully'
@@ -43,14 +43,18 @@ class CategoryController extends Controller
         try {
             $this->authorize('create', Category::class);
 
-            $category = Category::create($request->validated());
+            $category = Category::create([
+                'name' => $request->validated()['name'],
+                // 'name' => $request->name,
+                'user_id' => auth()->id(),
+            ]);
 
             return (new CategoryResource($category))->additional([
                 'message' => 'category created successfully'
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'failed to retrieve categories',
+                'message' => 'failed to create categories',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -115,7 +119,7 @@ class CategoryController extends Controller
         } catch (Exception $e) {
 
             return response()->json([
-                'message' => 'failed to update categories',
+                'message' => 'failed to delete categories',
                 'error' => $e->getMessage()
             ], 500);
         }

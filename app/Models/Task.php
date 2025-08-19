@@ -20,7 +20,6 @@ class Task extends Model
         'category_id'
     ];
 
-
     protected $casts = [
         'is_completed' => 'boolean',
         'due_date' => 'date'
