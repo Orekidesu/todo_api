@@ -50,7 +50,7 @@ class TaskController extends Controller
                 'due_date' => $request->validated()['due_date'],
                 'is_completed' => $request->validated()['is_completed'],
                 'category_id' => $request->validated(['category_id']),
-                'user_id' => auth()->id(), // Set during creation
+                'user_id' => auth()->id(),
             ]);
 
             $task->user_id = auth()->id();
