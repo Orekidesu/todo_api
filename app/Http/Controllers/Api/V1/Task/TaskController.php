@@ -44,8 +44,16 @@ class TaskController extends Controller
         try {
 
             $this->authorize('create', Task::class);
+            $task = Task::create([
+                'title' => $request->validated()['title'],
+                'description' => $request->validated()['description'],
+                'due_date' => $request->validated()['due_date'],
+                'is_completed' => $request->validated()['is_completed'],
+                'category_id' => $request->validated(['category_id']),
+                'user_id' => auth()->id(), // Set during creation
+            ]);
 
-            $task = Task::create($request->validated());
+            $task->user_id = auth()->id();
 
             return (new TaskResource($task->load('category')))->additional([
                 'message' => 'task created successfully',
