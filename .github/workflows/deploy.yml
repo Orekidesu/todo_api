@@ -37,6 +37,10 @@ jobs:
             # Navigate to project directory
             cd ${{ secrets.DEPLOY_PATH }}
             
+            echo "🔧 Fixing permissions before git reset..."
+            sudo chown -R ubuntu:www-data .
+            sudo chmod -R 775 .
+            
             echo "📥 Pulling latest changes from repository..."
             # Ensure we're on the correct branch and pull latest changes
             git fetch --all
@@ -49,6 +53,11 @@ jobs:
             
             # Install production dependencies
             composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+            # Restore permissions
+            sudo chmod -R 775 storage bootstrap/cache
+            sudo chown -R www-data:www-data storage bootstrap/cache
+            sudo chown www-data:www-data .env
             
             echo "⚙️ Configuring Laravel environment..."
             # Ensure .env file has production settings
