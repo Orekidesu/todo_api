@@ -1,0 +1,146 @@
+name: Deploy Laravel API to EC2
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🚀 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔐 Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          
+      - name: 🌐 Add SSH known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          
+      - name: ✅ Verify SSH Connection
+        run: |
+          ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} 'echo "SSH connection successful"'
+          
+      - name: 🚀 Deploy to EC2
+        run: |
+          ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+            set -e  # Exit on any error
+            
+            echo "🔄 Starting deployment process..."
+            
+            # Navigate to project directory
+            cd ${{ secrets.DEPLOY_PATH }}
+            
+            echo "📥 Pulling latest changes from repository..."
+            # Ensure we're on the correct branch and pull latest changes
+            git fetch --all
+            git reset --hard origin/main
+            git pull origin main
+            
+            echo "📦 Installing/updating Composer dependencies..."
+            # Remove vendor and lock file for clean install
+            rm -rf vendor/ composer.lock
+            
+            # Install production dependencies
+            composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+            
+            echo "⚙️ Configuring Laravel environment..."
+            # Ensure .env file has production settings
+            if [ ! -f .env ]; then
+                cp .env.example .env
+                php artisan key:generate --force
+            fi
+            
+            echo "🗃️ Running database migrations..."
+            # Run migrations (be careful in production)
+            php artisan migrate --force --no-interaction
+            
+            echo "🧹 Clearing Laravel caches..."
+            # Clear all caches
+            sudo -u www-data php artisan config:clear
+            sudo -u www-data php artisan cache:clear
+            sudo -u www-data php artisan route:clear
+            sudo -u www-data php artisan view:clear
+            sudo -u www-data php artisan event:clear
+            
+            echo "⚡ Optimizing Laravel for production..."
+            # Cache configurations for better performance
+            sudo -u www-data php artisan config:cache
+            sudo -u www-data php artisan route:cache
+            sudo -u www-data php artisan view:cache
+            sudo -u www-data php artisan event:cache
+            sudo -u www-data php artisan optimize
+            
+            echo "🔒 Setting correct file permissions..."
+            # Set ownership (ubuntu for git operations, www-data for web server)
+            sudo chown -R ubuntu:www-data .
+            sudo chmod -R 755 .
+            
+            # Laravel specific permissions
+            sudo chmod -R 775 storage bootstrap/cache
+            sudo chown -R www-data:www-data storage bootstrap/cache
+            sudo chown -R www-data:www-data .env
+            
+            echo "🔄 Restarting Apache web server..."
+            # Restart Apache to ensure all changes take effect
+            sudo systemctl restart apache2
+            
+            # Verify Apache is running
+            if sudo systemctl is-active --quiet apache2; then
+                echo "✅ Apache restarted successfully"
+            else
+                echo "❌ Apache failed to restart"
+                exit 1
+            fi
+            
+            echo "🎉 Deployment completed successfully!"
+            
+            # Display deployment info
+            echo "📊 Deployment Summary:"
+            echo "- Timestamp: $(date)"
+            echo "- Laravel Version: $(php artisan --version)"
+            echo "- PHP Version: $(php --version | head -n1)"
+            echo "- Git Commit: $(git rev-parse --short HEAD)"
+            
+          EOF
+          
+      - name: 🔍 Post-deployment Health Check
+        run: |
+          echo "🏥 Running health checks..."
+          
+          # Test HTTP response
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ secrets.EC2_HOST }})
+          if [ $HTTP_STATUS -eq 200 ]; then
+            echo "✅ HTTP health check passed (Status: $HTTP_STATUS)"
+          else
+            echo "⚠️ HTTP health check failed (Status: $HTTP_STATUS)"
+          fi
+          
+          # Test HTTPS response if SSL is configured
+          HTTPS_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ secrets.EC2_HOST }} || echo "000")
+          if [ $HTTPS_STATUS -eq 200 ]; then
+            echo "✅ HTTPS health check passed (Status: $HTTPS_STATUS)"
+          elif [ $HTTPS_STATUS -eq 000 ]; then
+            echo "ℹ️ HTTPS not configured or not accessible"
+          else
+            echo "⚠️ HTTPS health check failed (Status: $HTTPS_STATUS)"
+          fi
+          
+      - name: 📧 Notify on Success
+        if: success()
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 Application URL: http://${{ secrets.EC2_HOST }}"
+          echo "📅 Deployed at: $(date -u)"
+          
+      - name: 📧 Notify on Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Please check the logs above for error details."
