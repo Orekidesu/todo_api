@@ -28,7 +28,7 @@ class Task extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return  $this->belongsTo(User::class, 'user_id');
     }
 
     public function category(): BelongsTo
@@ -41,6 +41,8 @@ class Task extends Model
         return !is_null($this->category_id);
     }
 
+    // In the future, if nahan ko mu apply ug filter sa serve side
+    // but for now, leave it muna as is 
     public function scopeUncategorized($query)
     {
         return $query->whereNull('category_id');
