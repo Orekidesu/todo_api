@@ -30,7 +30,8 @@ class UpdateTaskRequest extends FormRequest
             'is_completed' => ['sometimes', 'boolean'],
             'category_id' => [
                 'sometimes',
-                'required',
+                // 'required',
+                'nullable',
                 'integer',
                 Rule::exists('categories', 'id'),
             ]
