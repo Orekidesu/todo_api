@@ -35,4 +35,19 @@ class Task extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
+
+    public function hasCategory(): Bool
+    {
+        return !is_null($this->category_id);
+    }
+
+    public function scopeUncategorized($query)
+    {
+        return $query->whereNull('category_id');
+    }
+
+    public function scopeCategorized($query)
+    {
+        return $query->whereNotNull('category_id');
+    }
 }

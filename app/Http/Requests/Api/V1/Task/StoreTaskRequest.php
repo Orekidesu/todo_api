@@ -29,7 +29,8 @@ class StoreTaskRequest extends FormRequest
             'due_date' => ['nullable', 'date', 'after_or_equal:today'],
             'is_completed' => ['required', 'boolean'],
             'category_id' => [
-                'required',
+                // 'required',
+                'nullable',
                 'integer',
                 Rule::exists('categories', 'id')
             ],
