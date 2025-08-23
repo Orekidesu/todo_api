@@ -1,66 +1,154 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Todo List API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful API built with Laravel for managing todo items. This API serves as the backend for the [Todo List Vue.js Frontend](https://github.com/Orekidesu/todo-list).
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   Create, read, update, and delete todo items
+-   User authentication and registration
+-   Category management for organizing tasks
+-   RESTful API endpoints with versioning
+-   JSON responses
+-   Laravel framework with modern PHP practices
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Before running this project, make sure you have the following installed:
 
-## Learning Laravel
+-   **PHP 8.1 or higher**
+-   **Composer** - [Download here](https://getcomposer.org/)
+-   **MySQL 5.7+ or MariaDB 10.3+**
+-   **Node.js 16+ and npm** (for asset compilation)
+-   **Git**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Recommended Development Environment
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   **Laragon** (Windows) - [Download here](https://laragon.org/)
+-   **XAMPP** (Cross-platform) - [Download here](https://www.xampp.org/)
+-   **Laravel Valet** (macOS) - [Installation guide](https://laravel.com/docs/valet)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+1. **Clone the repository**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+    ```bash
+    git clone https://github.com/Orekidesu/todo_api.git
+    cd todo-list-api
+    ```
 
-### Premium Partners
+2. **Install PHP dependencies**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+    ```bash
+    composer install
+    ```
 
-## Contributing
+3. **Copy environment file**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    ```bash
+    copy .env.example .env
+    ```
 
-## Code of Conduct
+4. **Generate application key**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    ```bash
+    php artisan key:generate
+    ```
 
-## Security Vulnerabilities
+5. **Configure database**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    Edit the `.env` file with your database credentials:
 
-## License
+    ```
+    FRONTEND_URL=http://localhost:5173 (default frontend url)
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=todo_list_api
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+6. **Create database**
+
+    Create a new database named `todo_list_api` in your MySQL server.
+
+7. **Run database migrations**
+
+    ```bash
+    php artisan migrate
+    ```
+
+## Running the Application
+
+1. **Start the development server**
+
+    ```bash
+    php artisan serve
+    ```
+
+    The API will be available at `http://localhost:8000`
+
+2. **For production deployment**
+    ```bash
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    ```
+
+### Authentication
+
+| Method | Endpoint                                  | Description             |
+| ------ | ----------------------------------------- | ----------------------- |
+| POST   | `/api/v1/register`                        | Register a new user     |
+| POST   | `/api/v1/login`                           | Login user              |
+| POST   | `/api/v1/logout`                          | Logout user             |
+| POST   | `/api/v1/forgot-password`                 | Request password reset  |
+| POST   | `/api/v1/reset-password`                  | Reset password          |
+| POST   | `/api/v1/email/verification-notification` | Send email verification |
+| GET    | `/api/v1/verify-email/{id}/{hash}`        | Verify email address    |
+
+Note: This repository only implemented the register,login,logout. If you want to explore more, you can use the rest of the enpoints.
+
+### Tasks
+
+| Method    | Endpoint               | Description            |
+| --------- | ---------------------- | ---------------------- |
+| GET       | `/api/v1/tasks`        | Get all tasks          |
+| POST      | `/api/v1/tasks`        | Create a new task      |
+| GET       | `/api/v1/tasks/{task}` | Get a specific task    |
+| PUT/PATCH | `/api/v1/tasks/{task}` | Update a specific task |
+| DELETE    | `/api/v1/tasks/{task}` | Delete a specific task |
+
+### Categories
+
+| Method    | Endpoint                        | Description                |
+| --------- | ------------------------------- | -------------------------- |
+| GET       | `/api/v1/categories`            | Get all categories         |
+| POST      | `/api/v1/categories`            | Create a new category      |
+| GET       | `/api/v1/categories/{category}` | Get a specific category    |
+| PUT/PATCH | `/api/v1/categories/{category}` | Update a specific category |
+| DELETE    | `/api/v1/categories/{category}` | Delete a specific category |
+
+### Other
+
+| Method | Endpoint    | Description                 |
+| ------ | ----------- | --------------------------- |
+| GET    | `/api/user` | Get authenticated user info |
+
+## Frontend Application
+
+This API is designed to work with the Vue.js frontend application:
+
+🔗 **[Todo List Vue.js Frontend](https://github.com/Orekidesu/todo-list)**
+
+## Some considerations
+
+This API uses Laravel Sanctum for authentication. Make sure to:
+
+1. Include the CSRF token for SPA authentication
+2. Use the `/api/v1/login` endpoint to authenticate users
+3. Include the authentication token in subsequent requests
+
+Make sure to configure the frontend application to point to this API endpoint.
+
+If you encounter any issues or have questions, please open an issue on GitHub.
