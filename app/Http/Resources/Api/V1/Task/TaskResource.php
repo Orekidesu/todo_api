@@ -22,9 +22,15 @@ class TaskResource extends JsonResource
             'due_date' => $this->due_date,
             'is_completed' => $this->is_completed,
             'user' => $this->user,
-            'category' => $this->whenLoaded('category', function () {
-                return new CategoryResource($this->category);
-            }),
+            // 'category' => $this->whenLoaded('category', function () {
+            //     return new CategoryResource($this->category);
+            // }),
+            'category' => $this->category ? new CategoryResource($this->category) : null,
+            'has_category' => $this->hasCategory(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+
+
         ];
     }
 }
