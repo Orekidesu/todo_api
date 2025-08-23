@@ -95,6 +95,88 @@ Before running this project, make sure you have the following installed:
     php artisan view:cache
     ```
 
+## 📁 Project Structure
+
+```
+todo-list-api/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Api/
+│   │   │       └── V1/
+│   │   │           ├── Auth/                    # Authentication controllers
+│   │   │           │   ├── AuthenticatedSessionController.php
+│   │   │           │   ├── EmailVerificationNotificationController.php
+│   │   │           │   ├── NewPasswordController.php
+│   │   │           │   ├── PasswordResetLinkController.php
+│   │   │           │   ├── RegisteredUserController.php
+│   │   │           │   └── VerifyEmailController.php
+│   │   │           ├── Category/               # Category management
+│   │   │           │   └── CategoryController.php
+│   │   │           └── Task/                   # Task management
+│   │   │               └── TaskController.php
+│   │   ├── Middleware/                         # Custom middleware
+│   │   └── Requests/                           # Form request validation
+│   ├── Models/                                 # Eloquent models
+│   │   ├── Category.php
+│   │   ├── Task.php
+│   │   └── User.php
+│   └── Providers/                              # Service providers
+├── bootstrap/                                  # Application bootstrap files
+├── config/                                     # Configuration files
+│   ├── auth.php                               # Authentication configuration
+│   ├── database.php                           # Database configuration
+│   ├── sanctum.php                            # Sanctum configuration
+│   └── ...
+├── database/
+│   ├── migrations/                            # Database migrations
+│   │   ├── create_users_table.php
+│   │   ├── create_categories_table.php
+│   │   ├── create_tasks_table.php
+│   │   └── ...
+│   ├── seeders/                               # Database seeders
+│   └── factories/                             # Model factories
+├── public/                                    # Publicly accessible files
+│   └── index.php                              # Application entry point
+├── resources/
+│   └── views/                                 # Blade templates (if needed)
+├── routes/
+│   ├── api.php                                # API routes
+│   └── web.php                                # Web routes
+├── storage/                                   # Application storage
+│   ├── app/                                   # Application files
+│   ├── framework/                             # Framework files
+│   └── logs/                                  # Application logs
+├── tests/                                     # Application tests
+│   ├── Feature/                               # Feature tests
+│   └── Unit/                                  # Unit tests
+├── vendor/                                    # Composer dependencies
+├── .env.example                               # Environment variables template
+├── artisan                                    # Laravel Artisan CLI
+├── composer.json                              # PHP dependencies & scripts
+├── composer.lock                              # Locked PHP dependencies
+└── README.md                                  # Project documentation
+```
+
+### Key Directories Explained
+
+-   **`app/Http/Controllers/Api/V1/`** - Versioned API controllers organized by feature (Auth, Category, Task)
+-   **`app/Models/`** - Eloquent models representing database entities (User, Task, Category)
+-   **`database/migrations/`** - Database schema migrations for creating and modifying tables
+-   **`routes/api.php`** - API route definitions with versioning and middleware
+-   **`config/`** - Laravel configuration files including authentication and database settings
+-   **`tests/`** - PHPUnit test files for ensuring code quality and functionality
+
+### API Architecture
+
+-   **RESTful Design** - Following REST conventions for consistent API endpoints
+-   **Version Control** - API versioning (v1) for backward compatibility
+-   **Laravel Sanctum** - Token-based authentication for SPA applications
+-   **Resource Controllers** - Standard CRUD operations for tasks and categories
+-   **Middleware Protection** - Authentication required for protected endpoints
+
+## API Endpoints
+
 ### Authentication
 
 | Method | Endpoint                                  | Description             |
